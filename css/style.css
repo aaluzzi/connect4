@@ -2,35 +2,40 @@ html,body {
     display: flex;
     align-items: center;
     flex-direction: column;
+    background-color: #121212;
+    color: #e1e1e1;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
 }
 
 .status {
     font-size: 32px;
+    padding: 32px;
 }
 
 .board {
-    display: flex;
-    width: 500px;
-    height: 400px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    width: min(650px, 90vmin);
+    padding: 3%;
+    border-radius: 32px;
+    background-color: #1e1e1e;
+    border: 3px solid black;
+    box-shadow: 5px 5px 10px black;
+}
+
+.cell {
+    border-radius: 50%;
+    background-color: #121212;
+    aspect-ratio: 1;
+    margin: 8%;
     border: 3px solid black;
 }
 
-.column {
-    flex: 1;
-    border: 3px solid green;
-    display: flex;
-    flex-direction: column-reverse;
-}
-
 .red {
-    background-color: red;
+    background-color: #FF0266;
 }
 
 .blue {
-    background-color: blue;
-}
-
-.piece {
-    border-radius: 50%;
-    aspect-ratio: 1;
+    background-color: #03DAC6;
 }

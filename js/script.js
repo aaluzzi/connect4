@@ -1,37 +1,36 @@
 const socket = io();
 let player1 = null;
 
-document.querySelectorAll(".column").forEach(column => column.addEventListener('click', e => {
+document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', e => {
     socket.emit('try-move', e.target.dataset.col);
 }));
 
-socket.on("connect", () => {
-    socket.emit("join", window.location.href);
+socket.on('connect', () => {
+    const room = window.location.href.split("/");
+    socket.emit('join', room[room.length - 1]);
 });
 
 socket.on('start', startPlayer => {
-    setStatus(startPlayer === socket.id ? "You start!" : "Opponent starts!");
+    setStatus(startPlayer === socket.id ? 'You start!' : 'Opponent starts!');
     player1 = startPlayer;
 });
 
-socket.on('move', (player, col) => {
+socket.on('move', (player, row, col) => {
     console.log(`Player ${player} went`);
     console.log(col);
-    const piece = document.createElement("div");
-    piece.classList.add("piece");
+    const cell = document.querySelector(`.cell[data-row='${row}'][data-col='${col}']`)
     if (player1 === player) {
-        piece.classList.add("red");
+        cell.classList.add('red');
     } else {
-        piece.classList.add("blue");
+        cell.classList.add('blue');
     }
-    document.querySelector(`[data-col="${col}"]`).appendChild(piece);
-    setStatus(player === socket.id ? "Opponent's turn!" : "Your turn!"); //logic flips on turn change
+    setStatus(player === socket.id ? "Opponent's turn!" : 'Your turn!'); //logic flips on turn change
 });
 
 socket.on('win', winner => {
-    setStatus(winner === socket.id ? "You win!" : "You lose!")
+    setStatus(winner === socket.id ? 'You win!' : 'You lose!')
 });
 
 const setStatus = text => {
-    document.querySelector(".status").textContent = text;
+    document.querySelector('.status').textContent = text;
 }

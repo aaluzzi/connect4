@@ -14,13 +14,17 @@ module.exports = class Game {
         return player === this.turnPlayer && this.board[0][col] === 0;
     }
 
-    dropPiece(player, col) {
+    getOpenRowForCol(col) {
         for (let row = this.board.length - 1; row >= 0; row--) {
             if (this.board[row][col] === 0) {
-                this.board[row][col] = this.getPieceForPlayer(player);
-                break;
+                return row;
             }
         }
+        return -1;
+    }
+
+    dropPiece(player, col) {
+        this.board[this.getOpenRowForCol(col)][col] = this.getPieceForPlayer(player);
 
         //next turn player
         if (this.turnPlayer === this.player1) {

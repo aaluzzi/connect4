@@ -39,7 +39,6 @@ io.on('connection', (socket) => {
         } else {
             //initial player
             games[room] = new Game(socket.id);
-            console.log(games[room].board);
         }
     })
 
@@ -47,8 +46,10 @@ io.on('connection', (socket) => {
         console.log(socket.id + " trying to place at " + col);
 
         if (games[socket.room]?.player2 && games[socket.room].canDropPiece(socket.id, col)) {
+            console.log("asd");
+            let row = games[socket.room].getOpenRowForCol(col);
             games[socket.room].dropPiece(socket.id, col);
-            io.to(socket.room).emit("move", socket.id, col);
+            io.to(socket.room).emit("move", socket.id, row, col);
 
             if (games[socket.room].won(socket.id)) {
                 io.to(socket.room).emit("win", socket.id);
