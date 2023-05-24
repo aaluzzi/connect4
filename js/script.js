@@ -4,6 +4,9 @@ let player1 = null;
 document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', e => {
     socket.emit('try-move', e.target.dataset.col);
 }));
+document.querySelectorAll('.piece').forEach(cell => cell.addEventListener('click', e => {
+    socket.emit('try-move', e.target.parentElement.dataset.col);
+}));
 
 socket.on('connect', () => {
     const room = window.location.href.split("/");
@@ -21,12 +24,12 @@ socket.on('start', startPlayer => {
 });
 
 socket.on('move', (player, row, col) => {
-    setStatus("");
-    const cell = document.querySelector(`.cell[data-row='${row}'][data-col='${col}']`)
+    setStatus(" ");
+    const piece = document.querySelector(`.cell[data-row='${row}'][data-col='${col}'] > .piece`)
     if (player1 === player) {
-        cell.classList.add('red');
+        piece.classList.add('red');
     } else {
-        cell.classList.add('blue');
+        piece.classList.add('blue');
     }
     toggleTurn();
 });
