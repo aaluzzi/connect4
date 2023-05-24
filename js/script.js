@@ -16,8 +16,12 @@ socket.on('connect', () => {
 socket.on('start', startPlayer => {
     if (startPlayer === socket.id) {
         document.querySelector(".player1").classList.add("active");
+        document.querySelector(".player1 > .piece-icon").classList.add("red");
+        document.querySelector(".player2 > .piece-icon").classList.add("blue");
     } else {
         document.querySelector(".player2").classList.add("active");
+        document.querySelector(".player1 > .piece-icon").classList.add("blue");
+        document.querySelector(".player2 > .piece-icon").classList.add("red");
     }
     setStatus(startPlayer === socket.id ? 'You start!' : 'Opponent starts!');
     player1 = startPlayer;
