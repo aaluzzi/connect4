@@ -42,7 +42,11 @@ socket.on('win', winner => {
     setStatus(winner === socket.id ? 'You win!' : 'You lose!')
 });
 
-const setStatus = text => {
+socket.on('cancel', () => {
+    setStatus("Opponent disconnected. Game cancelled.");
+})
+
+function setStatus(text) {
     document.querySelector('.status').textContent = text;
 }
 

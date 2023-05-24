@@ -28,32 +28,41 @@ const games = {}
 io.on('connection', (socket) => {
     
     socket.on('join', (room) => {
-        console.log("room " + room);
+        console.log(socket.id + " is joining room " + room);
         socket.join(room);
         socket.room = room;
 
         if (room in games) {
-            //someone joined
-            games[room].addOpponent(socket.id);
-            io.to(socket.room).emit('start', games[room].player1);
+            //someone joined, make sure they are the second player
+            //TODO proper spectating? (currently just blocks other players)
+            if (!games[room].player2) {
+                games[room].addOpponent(socket.id);
+                io.to(socket.room).emit('start', games[room].player1);
+            }
         } else {
             //initial player
             games[room] = new Game(socket.id);
         }
     })
 
+    socket.on('disconnect', () => {
+        if (games[socket.room]) {
+            delete games[socket.room];
+            io.to(socket.room).emit("cancel", socket.id);
+        }
+    });
+
     socket.on('try-move', (col) => {
-        console.log(socket.id + " trying to place at " + col);
+        console.log(socket.id + " is trying to place at " + col);
 
         if (games[socket.room]?.player2 && games[socket.room].canDropPiece(socket.id, col)) {
-            console.log("asd");
             let row = games[socket.room].getOpenRowForCol(col);
             games[socket.room].dropPiece(socket.id, col);
             io.to(socket.room).emit("move", socket.id, row, col);
 
             if (games[socket.room].won(socket.id)) {
-                io.to(socket.room).emit("win", socket.id);
                 delete games[socket.room];
+                io.to(socket.room).emit("win", socket.id);
             }
         }
 
