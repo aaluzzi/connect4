@@ -11,20 +11,24 @@ socket.on('connect', () => {
 });
 
 socket.on('start', startPlayer => {
+    if (startPlayer === socket.id) {
+        document.querySelector(".player1").classList.add("active");
+    } else {
+        document.querySelector(".player2").classList.add("active");
+    }
     setStatus(startPlayer === socket.id ? 'You start!' : 'Opponent starts!');
     player1 = startPlayer;
 });
 
 socket.on('move', (player, row, col) => {
-    console.log(`Player ${player} went`);
-    console.log(col);
+    setStatus("");
     const cell = document.querySelector(`.cell[data-row='${row}'][data-col='${col}']`)
     if (player1 === player) {
         cell.classList.add('red');
     } else {
         cell.classList.add('blue');
     }
-    setStatus(player === socket.id ? "Opponent's turn!" : 'Your turn!'); //logic flips on turn change
+    toggleTurn();
 });
 
 socket.on('win', winner => {
@@ -33,4 +37,9 @@ socket.on('win', winner => {
 
 const setStatus = text => {
     document.querySelector('.status').textContent = text;
+}
+
+function toggleTurn() {
+    document.querySelector(".player1").classList.toggle("active");
+    document.querySelector(".player2").classList.toggle("active");
 }
