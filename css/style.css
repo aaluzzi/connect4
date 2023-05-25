@@ -45,6 +45,7 @@ html,body {
 
 .active {
     border: 2px solid #e1e1e1;
+    transition: border 0.25s linear;
 }
 
 .piece-icon {
@@ -81,10 +82,12 @@ html,body {
 
 .red {
     background-color: #FF0266;
+    transition: background-color 0.5s linear;
 }
 
 .blue {
     background-color: #03DAC6;
+    transition: background-color 0.5s linear;
 }
 
 .status {
