@@ -85,5 +85,14 @@ module.exports = class Game {
         }
         return false;
     }
+
+    tied() {
+        for (let col = 0; col < this.board[0].length; col++) {
+            if (this.board[0][col] === 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
 

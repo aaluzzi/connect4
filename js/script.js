@@ -43,6 +43,12 @@ socket.on('win', winner => {
     document.querySelector(".player2").classList.remove("active");
     document.querySelector(".rematch").style.display = "block";
 });
+socket.on('tie', () => {
+    setStatus('Tie!');
+    document.querySelector(".player1").classList.remove("active");
+    document.querySelector(".player2").classList.remove("active");
+    document.querySelector(".rematch").style.display = "block";
+});
 socket.on('cancel', () => {
     setStatus("Opponent disconnected. Game cancelled.");
 })

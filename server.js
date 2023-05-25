@@ -75,6 +75,10 @@ io.on('connection', (socket) => {
                 games[socket.room].end();
                 console.log("game won in room " + socket.room);
                 io.to(socket.room).emit("win", socket.id);
+            } else if (games[socket.room].tied()) {
+                games[socket.room].end();
+                console.log("game tied in room " + socket.room);
+                io.to(socket.room).emit("tie");
             }
         }
     });
