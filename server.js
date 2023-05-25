@@ -13,11 +13,20 @@ const path = require('path');
 app.use(express.static(path.join(__dirname, 'js')));
 app.use(express.static(path.join(__dirname, 'css')));
 
+function generateRoom() {
+    let allChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+	let room = '';
+	for(let i = 0; i < 5; i++) {
+		room += allChars.charAt(Math.floor(Math.random() * allChars.length));
+	}
+	return room;
+}
+
 app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/index.html");
+    res.redirect(generateRoom());
 });
 
-app.get("/:room", (req, res) => {
+app.get("/:room([A-Za-z0-9]{5})", (req, res) => {
     res.sendFile(__dirname + "/index.html");
 });
 
@@ -37,6 +46,7 @@ io.on('connection', (socket) => {
             //TODO proper spectating? (currently just blocks other players)
             if (!games[room].player2) {
                 games[room].addOpponent(socket.id);
+                console.log("game starting in room " + room);
                 io.to(socket.room).emit('start', games[room].player1);
             }
         } else {
@@ -62,6 +72,7 @@ io.on('connection', (socket) => {
 
             if (games[socket.room].won(socket.id)) {
                 delete games[socket.room];
+                console.log("game won in room " + socket.room);
                 io.to(socket.room).emit("win", socket.id);
             }
         }
