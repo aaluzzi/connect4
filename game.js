@@ -2,12 +2,21 @@ module.exports = class Game {
     constructor(player1) {
         this.player1 = player1;
         this.player2 = null;
-        this.turnPlayer = player1;
+        this.turnPlayer = null;
         this.board = Array(6).fill().map(() => Array(7).fill(0));
+        this.status = 'created';
     }
 
-    addOpponent(player2) {
-        this.player2 = player2;
+    start() {
+        this.status = 'started';
+        this.turnPlayer = this.player1;
+    }
+
+    end() {
+        this.status = 'ended';
+        this.player1 = null;
+        this.player2 = null;
+        this.board = Array(6).fill().map(() => Array(7).fill(0));
     }
 
     canDropPiece(player, col) {
@@ -67,7 +76,7 @@ module.exports = class Game {
                     }
                     //Check diag down right
                     if (r + 3 < this.board.length) {
-                        if (this.board[r][c] + this.board[r + 1][c + 1] + this.board[r + 2][c + 2] + this.board[r + 3][c + 3].val === winSum) {
+                        if (this.board[r][c] + this.board[r + 1][c + 1] + this.board[r + 2][c + 2] + this.board[r + 3][c + 3] === winSum) {
                             return true;
                         }
                     }

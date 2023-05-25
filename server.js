@@ -15,11 +15,11 @@ app.use(express.static(path.join(__dirname, 'css')));
 
 function generateRoom() {
     let allChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-	let room = '';
-	for(let i = 0; i < 5; i++) {
-		room += allChars.charAt(Math.floor(Math.random() * allChars.length));
-	}
-	return room;
+    let room = '';
+    for (let i = 0; i < 5; i++) {
+        room += allChars.charAt(Math.floor(Math.random() * allChars.length));
+    }
+    return room;
 }
 
 app.get("/", (req, res) => {
@@ -35,7 +35,7 @@ const Game = require('./game');
 const games = {}
 
 io.on('connection', (socket) => {
-    
+
     socket.on('join', (room) => {
         console.log(socket.id + " is joining room " + room);
         socket.join(room);
@@ -44,21 +44,22 @@ io.on('connection', (socket) => {
         if (room in games) {
             //someone joined, make sure they are the second player
             //TODO proper spectating? (currently just blocks other players)
-            if (!games[room].player2) {
-                games[room].addOpponent(socket.id);
+            if (games[room].status === 'created' && !games[room].player2) {
+                games[room].player2 = socket.id;
+                games[room].start();
                 console.log("game starting in room " + room);
-                io.to(socket.room).emit('start', games[room].player1);
+                io.to(socket.room).emit('start', games[room].turnPlayer);
             }
         } else {
             //initial player
             games[room] = new Game(socket.id);
         }
-    })
+    });
 
     socket.on('disconnect', () => {
         if (games[socket.room]) {
             delete games[socket.room];
-            io.to(socket.room).emit("cancel", socket.id);
+            io.to(socket.room).emit('cancel', socket.id);
         }
     });
 
@@ -71,11 +72,25 @@ io.on('connection', (socket) => {
             io.to(socket.room).emit("move", socket.id, row, col);
 
             if (games[socket.room].won(socket.id)) {
-                delete games[socket.room];
+                games[socket.room].end();
                 console.log("game won in room " + socket.room);
                 io.to(socket.room).emit("win", socket.id);
             }
         }
+    });
 
-    })
-})
+    socket.on('request-rematch', () => {
+        console.log(socket.id + " is requesting to rematch");
+
+        if (games[socket.room].status === 'ended') {
+            if (games[socket.room].player1 !== null && games[socket.room].player1 !== socket.id) { //repopulate game with second player, start
+                games[socket.room].player2 = socket.id;
+                games[socket.room].start();
+                io.to(socket.room).emit('start', games[socket.room].turnPlayer);
+            } else {
+                games[socket.room].player1 = socket.id; //repopulate game with first player
+                io.to(socket.room).emit('rematch-requested', socket.id);
+            }
+        }
+    });
+});
